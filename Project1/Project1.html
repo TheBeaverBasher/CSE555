@@ -1,0 +1,90 @@
+<!doctype html>
+<!--
+IP address of E2C instance: http://54.200.100.56/
+-->
+<html>
+        <head>
+                <title>CSE 555 Project 1</title>
+                <meta charset="utf-8"/>
+                <style media="all">
+                        body {
+                        margin-left: auto;
+                        width: expression(document.body.clientWidth > 995? "995px": "auto" );
+                        margin-right: auto;
+                        text-align: left;
+                        max-width: 995px
+                        }
+                </style>
+        </head>
+        <body>
+                <h3>Bradley Flynn<br>CSE 555 Project 1<br></h3>
+                <h2>Introduction</h2>
+                <p>
+                        In the early 1900s, Sergey Prokudin-Gorsky travelled Russia and captured a variety of scenes
+                        with three different color filters: blue, green, and red. Our job is to align these images automatically.
+                </p>
+                <h2>Structure of my Algorithm</h2>
+                <p>
+                        In the Prokudin-Gorskii photo collection, images were captured
+                        of the same scene with 3 different color channel extractions. Ordered
+                        from top to botom, there are blue, green, and red filtered images.
+                        My algorithm takes a few steps in finding the correct allignment:
+                        <ol>
+                                <li>Locate the best alignment in a blurred version of the image
+                                (about 512x512 pixels).</li>
+                                <li>We then search on a window of a "less blurred" version of the
+                                image for alignment shifts.</li>
+                                <li>Search yet again on a smaller window on the actual image for
+                                finer alignments.</li>
+                                <li>Align the image with these new shifts and then search for
+                                rotational shifts.</li>
+                                <li>Search for subpixel alignments on a small portion of the image using convolutions of red
+                                and green channels and then comparing them with the blue channel.</li>
+                                <li>Finally, crop out a .85x.85 window of the image.</li>
+                        </ol>
+                        When searching for a good alignment, my algorithm's error metric used a normalized cross
+                        correlation between the edges in the image. This helps to find features that may be similar across color channels.
+                        When running on my personal computer, this takes anywhere from fifteen to thirty seconds.
+                </p>
+                <h2>Results</h2>
+                <p>
+                Prior to any searching, we take an image like so:<br><br>
+                        <img src="Church_Window.jpg" alt="Gorskii Image" style="max-height: 1500px; max-width: 500px;"><br><br>
+                Split the image into thirds and layer the color channels<br><br>
+                        <img src="Church_Window_prealigned.jpg" alt="Pre-alignment" style="max-height: 500px; max-width: 500px;"><br><br>
+                After our shift searches on the edges in the image, we would end up
+                with an image like this:<br><br>
+                        <img src="Church_Window_postshift.jpg" alt="Post-Shift" style="max-height: 500px; max-width: 500px;"><br><br>
+                We would then search for possible rotational shifts on the edges in the
+                image and end up with:<br><br>
+                        <img src="Church_Window_postrotate.jpg" alt="Post-Rotate" style="max-height: 500px; max-width: 500px;"><br><br>
+                On a smaller window of the image, we would then look for subpixel shifts and then apply
+                a convolution to the image with noted shifts (if any)<br><br>
+                        <img src="Church_Window_postsubpixshift.jpg" alt="Post-SPS" style="max-height: 500px; max-width: 500px;"><br><br>
+                Finally, to crop out the edges, I didn't do anything special. I just used an
+                85% window which seemed to work for most images<br><br>
+                        <img src="Church_Window_aligned.jpg" alt="final" style="max-height: 500px; max-width: 500px;"><br><br>
+                </p>
+                <p>
+                Here's a look at another image process:<br><br>
+                        <img src="CoC.jpg" alt="Gorskii Image" style="max-height: 1500px; max-width: 500px;"><br><br>
+                        <img src="CoC_aligned.jpg" alt="final" style="max-height: 500px; max-width: 500px;"><br><br>
+
+                Something interesting: if there is a repeated pattern, my algorithm may not work the best. For example, in this image:<br><br>
+                        <img src="01520u.jpg" alt="Gorskii Image" style="max-height: 1500px; max-width: 500px;"><br><br>
+                You can see there are a lot of horizontal lines in the image from the trees in the backgorund. When trying to match features in the
+                image, those branches would be problematic. Here is what my output would look like:<br><br>
+                        <img src="01520u_aligned.jpg" alt="final" style="max-height: 500px; max-width: 500px;"><br><br>
+                My algorithm seems to work best on images without patterns that are in close proximity to each other.
+                </p>
+				<h2>Project Code</h2>
+				<p>
+					<ul>
+						<li><a href="align.m">Align a Prokudin-Gorsky image</a></li>
+						<li><a href="shiftSearch.m">Shift Searching</a></li>
+						<li><a href="rotateSearch.m">Rotational Searching</a></li>
+						<li><a href="subPixSearch.m">Subpixel Shift Searching</a></li>
+					</ul>
+				</p>
+        </body>
+</html>
